@@ -4,12 +4,18 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+// Definiert ein Objekt, das die Informationen eines Fahrers speichert
 public class Fahrer {
+    // Personalnummer des Fahrers
     private String personalnummer;
+    // Vorname des Fahrers
     private String vorname;
+    // Nachname des Fahrers
     private String nachname;
+    // Liste der Fahrten des Fahrers
     private List<Fahrt> fahrten;
 
+    // Konstruktor
     public Fahrer(String personalnummer, String vorname, String nachname) {
         this.personalnummer = personalnummer;
         this.vorname = vorname;
@@ -18,6 +24,7 @@ public class Fahrer {
     }
 
     // Getter und Setter
+
     public String getPersonalnummer() {
         return personalnummer;
     }
@@ -38,13 +45,13 @@ public class Fahrer {
         return fahrten;
     }
 
-    // Methode zum Hinzufügen einer Fahrt
+    // Fügt eine neue Fahrt zur Liste der Fahrten hinzu und sortiert die Liste nach Datum
     public void addFahrt(Fahrt fahrt) {
         fahrten.add(fahrt);
         Collections.sort(fahrten);
     }
 
-    // Methode zur Berechnung der Gesamtkilometer
+    // Berechnung der Gesamtkilometer aller Fahrten eines Fahrers
     public int berechneGesamtKilometer() {
         return fahrten.stream()
                 .mapToInt(Fahrt::getKilometer)
@@ -52,6 +59,7 @@ public class Fahrer {
     }
 
     @Override
+    // Gibt den Fahrer als Text zurück
     public String toString() {
         return personalnummer + " " + vorname + " " + nachname;
     }

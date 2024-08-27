@@ -13,19 +13,20 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static util.Fehlermeldung.zeigeFehlermeldung;
 
-// Thread zur Verarbeitung von externen Fahrerdaten aus der "addfahrten.csv Datei
+// Thread zur Verarbeitung von externen Fahrerdaten aus der "addfahrten.csv" Datei
 public class ExterneFahrtenVerarbeitung extends Thread {
-    // Name der Datei
+    // Name der Datei mit den externen Fahrerdaten
     private static final String EXTERNE_FAHRTEN = "addfahrten.csv";
     // Formatter für die Datumskonvertierung
     private static final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
     // Pfad zur Datei
     private final Path externeFahrten;
     // Map zur Speicherung der Fahrerobjekte
-    private final Map<String, Fahrer> fahrerMap;
+    private Map<String, Fahrer> fahrerMap = new ConcurrentHashMap<>();
     // Referenz zur GUI
     private final FahrtenManager fahrtenManager;
     // Flag zur Kontrolle der Ausführung des Threads
@@ -41,20 +42,15 @@ public class ExterneFahrtenVerarbeitung extends Thread {
     }
 
     // Gibt die ExterneFahrtenVerwaltung-Instanz zurück oder erstellt diese.
-    public static ExterneFahrtenVerarbeitung getInstance(Map<String, Fahrer> fahrerMap, FahrtenManager fahrtenManager, DateTimeFormatter dateFormatter) {
+    public static synchronized ExterneFahrtenVerarbeitung getInstance(Map<String, Fahrer> fahrerMap, FahrtenManager fahrtenManager, DateTimeFormatter dateFormatter) {
         if (instance == null) {
             instance = new ExterneFahrtenVerarbeitung(fahrerMap, fahrtenManager, dateFormatter);
         }
         return instance;
     }
 
-    // Startet die Instanz
-    public static void startInstance(Map<String, Fahrer> fahrerMap, FahrtenManager fahrtenManager) {
-        getInstance(fahrerMap, fahrtenManager, dateFormatter).start();
-    }
-
     // Beendet die Instanz
-    public static void shutdownInstance() {
+    public static synchronized void shutdownInstance() {
         if (instance != null) {
             instance.shutdown();
             try {
@@ -73,7 +69,7 @@ public class ExterneFahrtenVerarbeitung extends Thread {
             try {
                 // Überprüft, ob die Datei existiert
                 if (Files.exists(externeFahrten)) {
-                    processFile();
+                    verarbeiteDatei();
                 }
 // Wartet 60 Sekunden bis zur nächsten Überprüfung
                 Thread.sleep(60000);
@@ -86,18 +82,30 @@ public class ExterneFahrtenVerarbeitung extends Thread {
         }
     }
 
-    // Liest die Datei aus und fügt die neuen Fahrten hinzu
-    private void processFile() throws IOException {
+    // Liest die Datei aus und fügt die neuen Fahrten den Fahrern hinzu
+    private synchronized void verarbeiteDatei() throws IOException {
+        boolean dateiVerarbeitet = false;
         try (BufferedReader reader = new BufferedReader(new FileReader(externeFahrten.toFile()))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 verarbeiteZeilen(line);
             }
+            dateiVerarbeitet = true;
+        } catch (IOException e) {
+            zeigeFehlermeldung("Fehler beim lesen der Datei");
+        } finally {
+            // Löscht die Datei, nachdem diese verarbeitet wurde
+            try {
+                Files.deleteIfExists(externeFahrten);
+            } catch (IOException e) {
+                zeigeFehlermeldung("Fehler beim Löschen der Datei");
+            }
         }
-        Files.delete(externeFahrten);
+
     }
 
-    private void verarbeiteZeilen(String line) {
+    // Verarbeitet die einzelnen Zeilen aus der Datei
+    private synchronized void verarbeiteZeilen(String line) {
         String[] parts = line.split(",");
         if (parts.length != 4) {
             zeigeFehlermeldung("Ungültiges Zeilenformat");
@@ -108,19 +116,22 @@ public class ExterneFahrtenVerarbeitung extends Thread {
             LocalDate datum = LocalDate.parse(parts[1], dateFormatter);
             String startort = parts[2];
             int kilometer = Integer.parseInt(parts[3]);
-
+            // Überprüft, ob die Kilometerangabe negativ ist
             if (kilometer < 0) {
                 zeigeFehlermeldung("Negative Kilometerangabe in Zeile: " + line);
                 return;
             }
+            // Findet den Fahrer mithilfe der Personalnummer und fügt die Fahrt hinzu
             Fahrer fahrer = fahrerMap.get(personalnummer);
             if (fahrer == null) {
+                System.out.println("Anzahl der Fahrer in der Map " + fahrerMap.size() + " gefunden");
                 zeigeFehlermeldung("Fahrer mit der Personalnummer " + personalnummer + " nicht gefunden.");
                 return;
             }
             Fahrt neueFahrt = new Fahrt(datum, startort, kilometer);
             fahrer.addFahrt(neueFahrt);
 
+            // Aktualisiert die GUI, damit die neue Fahrt angezeigt wird
             SwingUtilities.invokeLater(() -> fahrtenManager.updateFahrerUI(fahrer));
         } catch (DateTimeParseException e) {
             zeigeFehlermeldung("Ungültiges Datumsformat in Zeile: " + line);
@@ -131,7 +142,8 @@ public class ExterneFahrtenVerarbeitung extends Thread {
         }
     }
 
-    public void shutdown() {
+    // Beendet den laufenden Thread
+    public synchronized void shutdown() {
         running = false;
         interrupt();
     }
