@@ -22,8 +22,9 @@ public class Main {
                 KilometererfassungView gui = new KilometererfassungView();
                 gui.setVisible(true);
             } catch (Exception e) {
+                // Ausgabe der Exception in der Konsole, da die GUI möglicherweise noch nicht existiert
                 e.printStackTrace();
-                System.out.println("Fehler beim Starten der Anwendung" + e.getMessage());
+                System.err.println("Fehler beim Starten der Anwendung" + e.getMessage());
             }
         });
     }

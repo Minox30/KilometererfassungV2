@@ -2,6 +2,7 @@ package gui;
 
 import model.Fahrer;
 import persistence.InterneFahrtenVerarbeitung;
+import static util.Fehlermeldung.zeigeFehlermeldung;
 
 import javax.swing.*;
 import java.util.ArrayList;
@@ -61,13 +62,13 @@ public class FahrerManager {
                         fahrerComboBox.setSelectedItem(neuerFahrer.toString());
                         JOptionPane.showMessageDialog(null, "Neuer Fahrer wurde hinzugefügt.");
                     } else {
-                        JOptionPane.showMessageDialog(null, "Dieser Fahrer ist bereits vorhanden.");
+                        zeigeFehlermeldung("Dieser Fahrer ist bereits vorhanden.");
                     }
                 } else {
-                    JOptionPane.showMessageDialog(null, "Die Personalnummer muss aus 10 Ziffern bestehen.");
+                    zeigeFehlermeldung("Die Personalnummer muss aus 10 Ziffern bestehen.");
                 }
             } else {
-                JOptionPane.showMessageDialog(null, "Bitte füllen Sie alle Felder aus.");
+                zeigeFehlermeldung("Bitte füllen Sie alle Felder aus.");
             }
         }
     }

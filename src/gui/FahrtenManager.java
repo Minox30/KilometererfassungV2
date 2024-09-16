@@ -1,5 +1,6 @@
 package gui;
 
+import static util.Fehlermeldung.zeigeFehlermeldung;
 import model.Fahrer;
 import model.Fahrt;
 
@@ -28,13 +29,13 @@ public class FahrtenManager {
     public void neueFahrtHinzufuegen(Fahrer ausgewaehlterFahrer, String datumString, String startort, String kilometer) {
         // Überprüft, ob ein gültiger Fahrer ausgewählt ist
         if (ausgewaehlterFahrer == null) {
-            JOptionPane.showMessageDialog(null, "Bitte wählen Sie zuerst einen Fahrer aus.");
+            zeigeFehlermeldung("Bitte wählen Sie zuerst einen Fahrer aus.");
             return;
         }
 
         // Überprüft, ob alle Felder ausgefüllt sind
         if (datumString.isEmpty() || startort.isEmpty() || kilometer.isEmpty()) {
-            JOptionPane.showMessageDialog(null, "Bitte füllen Sie alle Felder aus.");
+            zeigeFehlermeldung("Bitte füllen Sie alle Felder aus.");
             return;
         }
 
@@ -44,7 +45,7 @@ public class FahrtenManager {
 
             // Überprüft, ob das Datum in der Zukunft liegt
             if (datum.isAfter(LocalDate.now())) {
-                JOptionPane.showMessageDialog(null, "Das Datum darf nicht in der Zukunft liegen.");
+                zeigeFehlermeldung("Das Datum darf nicht in der Zukunft liegen.");
                 return;
             }
 
@@ -52,10 +53,9 @@ public class FahrtenManager {
             int km = Integer.parseInt(kilometer);
             // Überprüft, on die Kilometer negativ sind
             if (km < 0) {
-                JOptionPane.showMessageDialog(null, "Kilometeranzahl darf nicht negativ sein.");
+                zeigeFehlermeldung("Gefahrene Kilometer dürfen nicht negativ sein.");
                 return;
             }
-
             // Erstellt ein neues Fahrt-Objekt und fügt es dem Fahrer hinzu
             Fahrt neueFahrt = new Fahrt(datum, startort, km);
             ausgewaehlterFahrer.addFahrt(neueFahrt);
@@ -66,9 +66,9 @@ public class FahrtenManager {
 
             JOptionPane.showMessageDialog(null, "Neue Fahrt wurde hinzugefügt.");
         } catch (DateTimeParseException e) {
-            JOptionPane.showMessageDialog(null, "Bitte geben Sie das Datum im Format TT.MM.JJJJ ein.");
+            zeigeFehlermeldung("Bitte geben Sie das Datum im Format TT.MM.JJJJ ein.");
         } catch (NumberFormatException ex) {
-            JOptionPane.showMessageDialog(null, "Bitte geben Sie eine gültige Zahl für die Kilometer ein.");
+            zeigeFehlermeldung("Bitte geben Sie eine gültige Zahl für die Kilometer ein.");
         }
     }
 

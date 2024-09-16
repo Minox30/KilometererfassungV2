@@ -1,5 +1,6 @@
 package persistence;
 
+import static util.Fehlermeldung.zeigeFehlermeldung;
 import model.Fahrt;
 import model.Fahrer;
 
@@ -12,7 +13,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static util.Fehlermeldung.zeigeFehlermeldung;
 // Klasse zum Laden und Speichern von Fahrerdaten aus einer CSV-Datei
 public class InterneFahrtenVerarbeitung {
     private static final String CSV_File = "kilometer.csv";
@@ -62,7 +62,7 @@ public class InterneFahrtenVerarbeitung {
                 }
             }
         } catch (IOException e) {
-            zeigeFehlermeldung("Fehler beim Lesen der Datei");
+            zeigeFehlermeldung("Fehler beim Lesen der Datei " + CSV_File, e);
         }
         return fahrer;
     }
@@ -85,7 +85,7 @@ public class InterneFahrtenVerarbeitung {
                 }
             }
         } catch (IOException e) {
-            zeigeFehlermeldung("Fehler beim Speichern der Datei");
+            zeigeFehlermeldung("Fehler beim Speichern der Datei " + CSV_File, e);
         }
     }
 }
