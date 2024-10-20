@@ -120,6 +120,7 @@ public class ExterneFahrtenVerarbeitung extends Thread {
             // Überprüft, ob das Datum in der Zukunft liegt
             if(datum.isAfter(LocalDate.now())) {
                 zeigeExterneFehlermeldung("Das Datum darf nicht in der Zukunft liegen: "  +line);
+                return;
             }
             // Überprüft, ob die Kilometerangabe negativ ist
             if (kilometer < 0) {
@@ -136,7 +137,9 @@ public class ExterneFahrtenVerarbeitung extends Thread {
             fahrer.addFahrt(neueFahrt);
 
             // Aktualisiert die GUI, damit die neue Fahrt angezeigt wird
-            SwingUtilities.invokeLater(() -> fahrtenManager.updateFahrerUI(fahrer));
+            SwingUtilities.invokeLater(() -> {
+                fahrtenManager.updateFahrerUI(fahrer);
+            });
         } catch (DateTimeParseException e) {
             zeigeExterneFehlermeldung("Ungültiges Datumsformat in Zeile: " + line);
         } catch (NumberFormatException e) {
