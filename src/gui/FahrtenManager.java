@@ -14,14 +14,16 @@ import java.time.format.DateTimeParseException;
 public class FahrtenManager {
 
     // Tabelle zur Darstellung aller Fahrten eines Fahrers
-    private JTable fahrtenTable;
-    // Label zur Anzeige der Gesamtkilometer
-    private JLabel gesamtkilometerLabel;
+    private final JTable fahrtenTable;
+    // Label zur Anzeige der Gesamtkilometer eines Fahrers
+    private final JLabel gesamtkilometerLabel;
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
-    // Konstruktor
+    // Konstruktor: Initialisiert den Fahrtenmanager mit der Tabelle und dem Gesamtkilometerlabel
     public FahrtenManager(JTable fahrtenTable, JLabel gesamtkilometerLabel) {
+        // Tabelle zur Darstellung aller Fahrten eines Fahrers
         this.fahrtenTable = fahrtenTable;
+        // Label zur Anzeige der Gesamtkilometer eines Fahrers
         this.gesamtkilometerLabel = gesamtkilometerLabel;
     }
 
@@ -32,23 +34,19 @@ public class FahrtenManager {
             zeigeFehlermeldung("Bitte wählen Sie zuerst einen Fahrer aus.");
             return;
         }
-
         // Überprüft, ob alle Felder ausgefüllt sind
         if (datumString.isEmpty() || startort.isEmpty() || kilometer.isEmpty()) {
             zeigeFehlermeldung("Bitte füllen Sie alle Felder aus.");
             return;
         }
-
         try {
             // Konvertiert das Datum vom String in ein LocalDate-Objekt
             LocalDate datum = LocalDate.parse(datumString, DATE_FORMATTER);
-
             // Überprüft, ob das Datum in der Zukunft liegt
             if (datum.isAfter(LocalDate.now())) {
                 zeigeFehlermeldung("Das Datum darf nicht in der Zukunft liegen.");
                 return;
             }
-
             // Konvertiert die Kilometeranzahl vom String in einen Integer
             int km = Integer.parseInt(kilometer);
             // Überprüft, on die Kilometer negativ sind
@@ -64,6 +62,7 @@ public class FahrtenManager {
             updateFahrtenTabelle(ausgewaehlterFahrer);
             updateGesamtkilometer(ausgewaehlterFahrer);
 
+            // zeigt eine Bestätigungsmeldung an
             JOptionPane.showMessageDialog(null, "Neue Fahrt wurde hinzugefügt.");
         } catch (DateTimeParseException e) {
             zeigeFehlermeldung("Bitte geben Sie das Datum im Format TT.MM.JJJJ ein.");
@@ -78,6 +77,7 @@ public class FahrtenManager {
             updateFahrtenTabelle(fahrer);
             updateGesamtkilometer(fahrer);
         } else {
+            // Tabelle wird geleert und Gesamtkilometer auf 0 gesetzt, wenn kein Fahrer ausgewählt wurde
             clearFahrtenTabelle();
             gesamtkilometerLabel.setText("Gesamtkilometer: 0");
         }
@@ -98,6 +98,7 @@ public class FahrtenManager {
     // Aktualisiert die Anzeige der Gesamtkilometer für den ausgewählten Fahrer
     private void updateGesamtkilometer(Fahrer fahrer) {
         SwingUtilities.invokeLater(() -> {
+            // Berechnet die Gesamtkilometer des Fahrers und aktualisiert das Label
             int gesamtKilometer = fahrer.berechneGesamtKilometer();
             gesamtkilometerLabel.setText("Gesamtkilometer: " + gesamtKilometer);
         });

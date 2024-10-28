@@ -10,7 +10,6 @@ import java.awt.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
-
 public class KilometererfassungView extends JFrame {
     // GUI-Komponenten
     private JPanel mainPanel;
@@ -25,23 +24,36 @@ public class KilometererfassungView extends JFrame {
     private JScrollPane fahrtenScrollPane;
     private JLabel gesamtkilometerLabel;
 
+    // Verwalter der Fahrten- und Fahrerdaten
     private FahrtenManager fahrtenManager;
     private FahrerManager fahrerManager;
     private ExterneFahrtenVerarbeitung externeFahrtenVerarbeitung;
     private InterneFahrtenVerarbeitung interneFahrtenVerarbeitung;
+
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
+    // Konstruktor: Erstellt die GUI und initialisiert die Verarbeitung der internen und externen Fahrten
     public KilometererfassungView() {
+        // Startet die GUI-Initialisierung im Event-Dispatch-Thread
         SwingUtilities.invokeLater(() -> {
+            // Erstellt eine neue Instanz für die Verarbeitung interner Fahrer-Daten
             interneFahrtenVerarbeitung= new InterneFahrtenVerarbeitung();
+            // Erstellt die GUI-Komponenten
             createUIComponents();
+            // Erstellt den Fahrten-Manager, der die Fahrtendaten verwaltet
             fahrtenManager= new FahrtenManager(fahrtenTable, gesamtkilometerLabel);
+            // Erstellt den Fahrer-Manager, der die Fahrerdaten verwaltet
             fahrerManager = new FahrerManager(fahrerComboBox, interneFahrtenVerarbeitung);
+            // Fügt Event-Listener zu den GUI-Komponenten hinzu
             addListeners();
+            // Setzt das mainPanel als Inhalt des Fensters
             this.setContentPane(mainPanel);
+            // Passt die Größe des Fensters automatisch an den Inhalt an
             this.pack();
+            // Zeigt das Fenster sichtbar an
             this.setVisible(true);
-            externeFahrtenVerarbeitung = ExterneFahrtenVerarbeitung.getInstance(fahrerManager.getFahrerMap(),fahrtenManager,DATE_FORMATTER);
+            // Hintergrund Thread zur Verarbeitung externer Fahrten
+            externeFahrtenVerarbeitung = ExterneFahrtenVerarbeitung.getInstance(fahrerManager.getFahrerMap(),fahrtenManager);
             externeFahrtenVerarbeitung.start();
         });
     }

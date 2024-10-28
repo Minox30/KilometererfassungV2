@@ -10,16 +10,20 @@ public class Main {
             for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
                 if ("Nimbus".equals(info.getName())) {
                     UIManager.setLookAndFeel(info.getClassName());
+                    // Bricht die Schleife ab, sobald Nimbus gefunden und gesetzt wurde
                     break;
                 }
             }
         } catch (Exception e) {
+            // Gibt die Fehlermeldung aus, falls das Setzen des Look-and-Feels fehlschlägt
             e.printStackTrace();
         }
         // Startet die GUI im Event-Dispatch-Thread
         SwingUtilities.invokeLater(() ->{
             try {
+                // Erstellt und zeigt die GUI für die Kilometererfassung
                 KilometererfassungView gui = new KilometererfassungView();
+                // Macht das Fenster sichtbar
                 gui.setVisible(true);
             } catch (Exception e) {
                 // Ausgabe der Exception in der Konsole, da die GUI möglicherweise noch nicht existiert

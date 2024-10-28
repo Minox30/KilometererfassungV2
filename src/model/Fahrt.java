@@ -5,13 +5,13 @@ import java.time.LocalDate;
 // Definiert ein Objekt, das eine einzelne Fahrt eines Fahrers speichert
 public class Fahrt implements Comparable<Fahrt>{
     // Datum der Fahrt
-    private LocalDate datum;
+    private final LocalDate datum;
     // Startort der Fahrt
-    private String startort;
+    private final String startort;
     // Gefahrene Kilometer der Fahrt
-    private int kilometer;
+    private final int kilometer;
 
-    // Konstruktor
+    // Konstruktor: Erstellt eine neue Fahrt mit Datum, Startort und Kilometeranzahl
     public Fahrt(LocalDate datum, String startort, int kilometer) {
         this.datum = datum;
         this.startort = startort;
@@ -34,7 +34,6 @@ public class Fahrt implements Comparable<Fahrt>{
     public int compareTo(Fahrt other) {
         return other.datum.compareTo(this.datum); // Absteigende Sortierung
     }
-
     @Override
     // Gibt die Fahrt als Text zurück
     public String toString() {
