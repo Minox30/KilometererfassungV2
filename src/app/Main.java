@@ -1,3 +1,5 @@
+package app;
+
 import gui.KilometererfassungView;
 
 import javax.swing.*;
@@ -14,9 +16,8 @@ public class Main {
                     break;
                 }
             }
+            // Falls Nimbus nicht verfügbar ist, wird das Standard Look-and-Feel verwendet
         } catch (Exception e) {
-            // Gibt die Fehlermeldung aus, falls das Setzen des Look-and-Feels fehlschlägt
-            e.printStackTrace();
         }
         // Startet die GUI im Event-Dispatch-Thread
         SwingUtilities.invokeLater(() ->{
