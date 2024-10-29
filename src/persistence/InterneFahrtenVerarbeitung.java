@@ -29,10 +29,22 @@ public class InterneFahrtenVerarbeitung {
         // Die CSV-Datei, die die Daten speichert
         File file = new File(CSV_File);
 
-        //Überprüft, ob die Datei existiert und falls nicht, wird diese erstellt.
+        //Überprüft, ob die Datei existiert
         if (!file.exists()) {
-            zeigeFehlermeldung("Die Datei konnte nicht gefunden werden.");
-            return fahrer;
+            try {
+                // Erstellt die Datei, falls sie nicht existiert
+                if (file.createNewFile()) {
+                    System.out.println("Die Datei wurde erfolgreich erstellt: " + CSV_File);
+                } else {
+                    zeigeFehlermeldung("Die Datei konnte nicht erstellt werden.");
+                    // Rückgabe einer leeren Liste, wenn die Erstellung fehlschlägt
+                    return fahrer;
+                }
+            } catch (IOException e) {
+                zeigeFehlermeldung("Fehler beim Erstellen der Datei " + CSV_File + ": " + e.getMessage());
+                // Rückgabe einer leeren Liste bei einem Fehler
+                return fahrer;
+            }
         }
         // Nutzung des BufferedReader zum Lesen der Datei.
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
